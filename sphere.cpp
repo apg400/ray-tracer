@@ -6,7 +6,7 @@
 Hit Sphere::Intersection(const Ray& ray, int part) const
 {
     // t = [-b +- sqrt(b^2 - 4ac)] / 2a
-    vec3 w = ray.endpoint - center.normalized();
+    vec3 w = ray.endpoint - center;
     double a = dot(ray.direction, ray.direction);
     double b = 2 * dot(w, ray.direction);
     double c = dot(w, w) - (radius * radius);
@@ -15,6 +15,8 @@ Hit Sphere::Intersection(const Ray& ray, int part) const
         double x = (b > 0) ? -0.5 * (b + sqrt(discriminant)) : -0.5 * (b - sqrt(discriminant));
         double t1 = x / a;
         double t2 = c / x;
+        //double t1 = (-b + sqrt(discriminant)) / (2 * a);
+        //double t2 = (-b - sqrt(discriminant)) / (2 * a);
         if (t1 > t2) std::swap(t1, t2);
         if (t1 > small_t) return {this, t1, 0};
         if (t2 > small_t) return {this, t2, 0};
