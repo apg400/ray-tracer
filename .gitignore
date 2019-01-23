@@ -1,5 +1,9 @@
 CMakeCache.txt
 CMakeFiles/
 Makefile
+grading/
 *.cmake
 *.exe
+*.o
+*.dblite
+ray_tracer
