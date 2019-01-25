@@ -6,7 +6,7 @@
 class Phong_Shader : public Shader
 {
 public:
-    vec3 color_ambient,color_diffuse,color_specular;
+    vec3 color_ambient, color_diffuse, color_specular;
     double specular_power;
 
     Phong_Shader(Render_World& world_input,

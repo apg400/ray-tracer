@@ -12,7 +12,7 @@ Hit Sphere::Intersection(const Ray& ray, int part) const
     double c = dot(w, w) - (radius * radius);
     double discriminant = (b * b) - (4 * a * c);
     if (discriminant > small_t) {
-        double x = (b > 0) ? -0.5 * (b + sqrt(discriminant)) : -0.5 * (b - sqrt(discriminant));
+        double x = (b > 0) ? -0.5*(b + sqrt(discriminant)) : -0.5*(b - sqrt(discriminant));
         double t1 = x / a;
         double t2 = c / x;
         //double t1 = (-b + sqrt(discriminant)) / (2 * a);
