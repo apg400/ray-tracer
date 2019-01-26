@@ -11,14 +11,17 @@ Shade_Surface(const Ray& ray,const vec3& intersection_point,
 {
     vec3 color = color_ambient * world.ambient_intensity;
     for (Light* light : world.lights) {
-        vec3 light_dir = light->position - intersection_point;
+        vec3 light_dir = (light->position - intersection_point).normalized();
         Ray shadow_ray(intersection_point, light_dir);
         Hit interference = world.Closest_Intersection(shadow_ray);
         if (!interference.object) {
-            vec3 h = (light_dir.normalized() + (-ray.direction).normalized()).normalized();
-            color += color_diffuse * light->brightness * std::max(0.0, dot(normal,light_dir)) 
-                     + color_specular * light->brightness 
-                     * pow(dot(normal,h), specular_power); 
+            vec3 d = (intersection_point - light->position).normalized();
+            vec3 r = d - 2.0 * dot(normal, d) * normal;
+            color = color + color_diffuse * std::max(0.0, dot(normal,light_dir)) 
+                    * light->Emitted_Light(light->position - intersection_point) 
+                    + color_specular 
+                    * pow(std::max(0.0,dot(-ray.direction, r)), specular_power) 
+                    * light->Emitted_Light(light->position-intersection_point);
         }
     }
     return color;

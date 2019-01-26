@@ -7,3 +7,5 @@ grading/
 *.o
 *.dblite
 ray_tracer
+diff.png
+output.png
