@@ -42,23 +42,36 @@ void Mesh::Read_Obj(const char* file)
 // Check for an intersection against the ray.  See the base class for details.
 Hit Mesh::Intersection(const Ray& ray, int part) const
 {
-    TODO;
-    return {};
+    if (part >= 0) {
+        double t = 0.0;
+        if (this->Intersect_Triangle(ray, part, t)) 
+            return {this, t, part};
+    } 
+    return {nullptr, 0.0, part};
+
+    /*else {
+        Hit intersection = {nullptr, std::numeric_limits<double>::max(), part};
+        double dist = 0.0;
+        int n = triangles.size();
+        for (int i = 0; i < n; i++) {
+            if (this->Intersect_Triangle(ray, i, dist) && dist < intersection.dist)
+                intersection = {this, dist, i};                 
+        }
+        return intersection;
+    }*/
 }
 
 // Compute the normal direction for the triangle with index part.
 vec3 Mesh::Normal(const vec3& point, const int part) const
 {
     assert(part>=0);
-    
     ivec3 index = triangles[part];
     vec3 A = vertices[index[0]];
     vec3 B = vertices[index[1]];
     vec3 C = vertices[index[2]];
-
-    vec3 normal = cross((B-A).normalized(), (C-A).normalized());
-    if (normal[2] < 0) normal[2] = -normal[2];
-    
+    // Indices are ordered counterclockwise to represent the front facing direction
+    // The correct normal is the cross product of vector AB with AC 
+    vec3 normal = (cross(B-A, C-A)).normalized();
     return normal;
 }
 
@@ -85,13 +98,23 @@ bool Mesh::Intersect_Triangle(const Ray& ray, int tri, double& dist) const
 
     double denom = dot(ray.direction, normal);
     if (denom > small_t || denom < -small_t) {
-        vec3 w = A - ray.endpoint;
-        double t = dot(w, normal) / denom;
-        if (t > small_t) dist = t;
+        vec3 EA = A - ray.endpoint;
+        double t = dot(EA, normal) / denom;
+        if (t > small_t) {
+            vec3 P = ray.Point(t); 
+            // P = (1 - u - v)A + u * B + v * C           
+            double u = dot(cross(P-A, C-A), vec3(0.0, 0.0, 1.0)) 
+                         / dot(cross(B-A, C-A), vec3(0.0, 0.0, 1.0));
+            double v = dot(cross(B-A, P-A), vec3(0.0, 0.0, 1.0)) 
+                         / dot(cross(B-A, C-A), vec3(0.0, 0.0, 1.0));
+            double w = 1 - u- v;
+           
+            if (u > weight_tol && v > weight_tol && w > weight_tol) {
+                dist = t;
+                return true;
+            }
+        }
     }
-    /////////////////////////////////////
-    //    TODO                  ////////
-    ////////////////////////////////////
 
     return false;
 }
