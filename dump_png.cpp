@@ -1,4 +1,4 @@
-#include <png.h>
+#include <libpng/png.h>
 #include <cassert>
 
 typedef unsigned int Pixel;

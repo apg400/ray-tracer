@@ -47,11 +47,19 @@ Hit Mesh::Intersection(const Ray& ray, int part) const
 }
 
 // Compute the normal direction for the triangle with index part.
-vec3 Mesh::Normal(const vec3& point, int part) const
+vec3 Mesh::Normal(const vec3& point, const int part) const
 {
     assert(part>=0);
-    TODO;
-    return vec3();
+    
+    ivec3 index = triangles[part];
+    vec3 A = vertices[index[0]];
+    vec3 B = vertices[index[1]];
+    vec3 C = vertices[index[2]];
+
+    vec3 normal = cross((B-A).normalized(), (C-A).normalized());
+    if (normal[2] < 0) normal[2] = -normal[2];
+    
+    return normal;
 }
 
 // This is a helper routine whose purpose is to simplify the implementation
@@ -68,7 +76,23 @@ vec3 Mesh::Normal(const vec3& point, int part) const
 // two triangles.
 bool Mesh::Intersect_Triangle(const Ray& ray, int tri, double& dist) const
 {
-    TODO;
+    ivec3 index = triangles[tri];
+    vec3 A = vertices[index[0]];
+    vec3 B = vertices[index[1]];
+    vec3 C = vertices[index[2]];
+    
+    vec3 normal = this->Normal(A, tri);
+
+    double denom = dot(ray.direction, normal);
+    if (denom > small_t || denom < -small_t) {
+        vec3 w = A - ray.endpoint;
+        double t = dot(w, normal) / denom;
+        if (t > small_t) dist = t;
+    }
+    /////////////////////////////////////
+    //    TODO                  ////////
+    ////////////////////////////////////
+
     return false;
 }
 

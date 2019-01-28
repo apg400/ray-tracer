@@ -12,7 +12,8 @@ bool Box::Intersection(const Ray& ray) const
 Box Box::Union(const Box& bb) const
 {
     Box box;
-    TODO;
+    //box.lo = std::min(this->lo, bb.lo);
+    //box.hi = std::max(this->hi, bb.hi);
     return box;
 }
 
