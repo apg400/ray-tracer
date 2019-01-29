@@ -25,9 +25,11 @@ public:
 
     vec3 Emitted_Light(const vec3& vector_to_light) const
     {
-        TODO; // compute the emitted light for the spotlight.  Don't forget the
+        // compute the emitted light for the spotlight.  Don't forget the
         // factor of 4*pi and the falloff (same as point light).
-        return vec3();
+        
+        return pow(min_cos_angle, falloff_exponent) * brightness * color 
+               / (4 * pi * vector_to_light.magnitude_squared()); 
     }
 };
 #endif

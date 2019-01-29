@@ -9,24 +9,28 @@ vec3 Phong_Shader::
 Shade_Surface(const Ray& ray,const vec3& intersection_point,
     const vec3& normal,int recursion_depth) const
 {
-    vec3 color = color_ambient * world.ambient_intensity;
-    /*if (recursion_depth > 0) {
-        vec3 r = ray.direction - 2.0 * dot(normal, ray.direction) * normal;
-        Ray reflected_ray(intersection_point, r);
-        color = color + world.Cast_Ray(reflected_ray, recursion_depth-1);
-    }*/
+    vec3 color = color_ambient * world.ambient_color * world.ambient_intensity;
+
     for (Light* light : world.lights) {
+        
         vec3 light_dir = (light->position - intersection_point).normalized();
         Ray shadow_ray(intersection_point, light_dir);
         Hit interference = world.Closest_Intersection(shadow_ray);
-        if (!interference.object) {
+
+        if (interference.object != nullptr) {
+            double light_dist = (shadow_ray.endpoint - light->position).magnitude();
+            if (light_dist > small_t && light_dist <= interference.dist) 
+                interference = {nullptr, 0, 0};
+        }
+
+        if (!interference.object || !world.enable_shadows) {
             vec3 d = (intersection_point - light->position).normalized();
             vec3 ideal_r = d - 2.0 * dot(normal, d) * normal;
             color = color + color_diffuse * std::max(0.0, dot(normal,light_dir)) 
                     * light->Emitted_Light(light->position - intersection_point) 
                     + color_specular 
-                    * pow(std::max(0.0,dot(-ray.direction, ideal_r)), specular_power) 
-                    * light->Emitted_Light(light->position-intersection_point);
+                    * pow(std::max(0.0, dot(-ray.direction, ideal_r)), specular_power) 
+                    * light->Emitted_Light(light->position - intersection_point);
         }
     }
     return color;
