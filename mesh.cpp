@@ -36,7 +36,7 @@ void Mesh::Read_Obj(const char* file)
             triangles.push_back(e);
         }
     }
-    number_parts=triangles.size();
+    number_parts = triangles.size();
 }
 
 // Check for an intersection against the ray.  See the base class for details.
@@ -48,31 +48,19 @@ Hit Mesh::Intersection(const Ray& ray, int part) const
             return {this, t, part};
     } 
     return {nullptr, 0.0, part};
-
-    /*else {
-        Hit intersection = {nullptr, std::numeric_limits<double>::max(), part};
-        double dist = 0.0;
-        int n = triangles.size();
-        for (int i = 0; i < n; i++) {
-            if (this->Intersect_Triangle(ray, i, dist) && dist < intersection.dist)
-                intersection = {this, dist, i};                 
-        }
-        return intersection;
-    }*/
 }
 
 // Compute the normal direction for the triangle with index part.
 vec3 Mesh::Normal(const vec3& point, const int part) const
 {
-    assert(part>=0);
+    assert(part >= 0);
     ivec3 index = triangles[part];
     vec3 A = vertices[index[0]];
     vec3 B = vertices[index[1]];
     vec3 C = vertices[index[2]];
     // Indices are ordered counterclockwise to represent the front facing direction
     // The correct normal is the cross product of vector AB with AC 
-    vec3 normal = (cross(B-A, C-A)).normalized();
-    return normal;
+    return (cross(B-A, C-A)).normalized();
 }
 
 // This is a helper routine whose purpose is to simplify the implementation
@@ -90,33 +78,17 @@ vec3 Mesh::Normal(const vec3& point, const int part) const
 bool Mesh::Intersect_Triangle(const Ray& ray, int tri, double& dist) const
 {
     ivec3 index = triangles[tri];
-    vec3 A = vertices[index[0]];
-    vec3 B = vertices[index[1]];
-    vec3 C = vertices[index[2]];
+    vec3 y = ray.endpoint - vertices[index[0]];
+    vec3 v = vertices[index[1]] - vertices[index[0]];
+    vec3 w = vertices[index[2]] - vertices[index[0]];
     
-    vec3 normal = this->Normal(A, tri);
-
-    double denom = dot(ray.direction, normal);
-    if (denom > small_t || denom < -small_t) {
-        vec3 EA = A - ray.endpoint;
-        double t = dot(EA, normal) / denom;
-        if (t > small_t) {
-            vec3 P = ray.Point(t); 
-            // P = (1 - u - v)A + u * B + v * C           
-            double u = dot(cross(P-A, C-A), vec3(0.0, 0.0, 1.0)) 
-                         / dot(cross(B-A, C-A), vec3(0.0, 0.0, 1.0));
-            double v = dot(cross(B-A, P-A), vec3(0.0, 0.0, 1.0)) 
-                         / dot(cross(B-A, C-A), vec3(0.0, 0.0, 1.0));
-            double w = 1 - u- v;
-           
-            if (u > weight_tol && v > weight_tol && w > weight_tol) {
-                dist = t;
-                return true;
-            }
-        }
-    }
-
-    return false;
+    double det = dot(cross(ray.direction, v), w);
+    dist = -1 * dot(cross(v, w), y) / det; 
+    double beta = dot(cross(w, ray.direction), y) / det;
+    double gamma = dot(cross(ray.direction, v), y) / det;
+    
+    return dist > small_t && beta > weight_tol && gamma > weight_tol 
+           && 1-beta-gamma > weight_tol; 
 }
 
 // Compute the bounding box.  Return the bounding box of only the triangle whose
