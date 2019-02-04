@@ -27,7 +27,7 @@ Hit Render_World::Closest_Intersection(const Ray& ray)
 {
     Hit closest_hit = {nullptr, std::numeric_limits<double>::max(), 0};
     for (Object* obj : objects) {
-        Hit current = obj->Intersection(ray, 0);
+        Hit current = obj->Intersection(ray, -1);
         if (current.object && current.dist > small_t && current.dist < closest_hit.dist) 
             closest_hit = current;
     }
@@ -59,13 +59,13 @@ void Render_World::Render()
 
 // cast ray and return the color of the closest intersected surface point,
 // or the background color if there is no object intersection
-vec3 Render_World::Cast_Ray(const Ray& ray,int recursion_depth)
+vec3 Render_World::Cast_Ray(const Ray& ray, int recursion_depth)
 {
     Hit intersection = Closest_Intersection(ray);
     vec3 color = {1, 1, 1};
     if (intersection.object) {
         vec3 point = ray.Point(intersection.dist);
-        vec3 normal = intersection.object->Normal(point, 0);
+        vec3 normal = intersection.object->Normal(point, intersection.part);
         color = intersection.object->material_shader
                 ->Shade_Surface(ray, point, normal, recursion_depth);
     } else {

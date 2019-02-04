@@ -15,7 +15,7 @@ class Render_World
 public:
     Camera camera;
 
-    Shader *background_shader;
+    Shader* background_shader;
     std::vector<Object*> objects;
     std::vector<Light*> lights;
     vec3 ambient_color;

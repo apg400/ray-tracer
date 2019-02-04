@@ -46,7 +46,22 @@ Hit Mesh::Intersection(const Ray& ray, int part) const
         double t = 0.0;
         if (this->Intersect_Triangle(ray, part, t)) 
             return {this, t, part};
-    } 
+    } else {
+        double min_t = std::numeric_limits<double>::max();
+        int part = 0;
+        Hit intersection = {nullptr, 0, 0};
+        for (int i = 0; i < triangles.size(); i++) {
+            double t = 0.0;
+            if (this->Intersect_Triangle(ray, i, t) && t < min_t) {
+                intersection.object = this;
+                min_t = t;
+                part = i;
+            }   
+        }
+        intersection.dist = min_t;
+        intersection.part = part;
+        return intersection;
+    }
     return {nullptr, 0.0, part};
 }
 
