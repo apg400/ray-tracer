@@ -50,7 +50,7 @@ Hit Mesh::Intersection(const Ray& ray, int part) const
         double min_t = std::numeric_limits<double>::max();
         int part = 0;
         Hit intersection = {nullptr, 0, 0};
-        for (int i = 0; i < triangles.size(); i++) {
+        for (size_t i = 0; i < triangles.size(); i++) {
             double t = 0.0;
             if (this->Intersect_Triangle(ray, i, t) && t < min_t) {
                 intersection.object = this;
