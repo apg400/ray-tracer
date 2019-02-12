@@ -111,6 +111,15 @@ bool Mesh::Intersect_Triangle(const Ray& ray, int tri, double& dist) const
 Box Mesh::Bounding_Box(int part) const
 {
     Box b;
-    TODO;
+    ivec3 index = triangles[part];
+    b.hi = componentwise_max(
+               vertices[index[2]],
+               componentwise_max(vertices[index[0]], vertices[index[1]])
+           );
+    b.lo = componentwise_min(
+               vertices[index[2]], 
+               componentwise_min(vertices[index[0]], vertices[index[1]])
+           );
+
     return b;
 }

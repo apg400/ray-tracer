@@ -76,8 +76,17 @@ vec3 Render_World::Cast_Ray(const Ray& ray, int recursion_depth)
 
 void Render_World::Initialize_Hierarchy()
 {
-    TODO; // Fill in hierarchy.entries; there should be one entry for
+    // Fill in hierarchy.entries; there should be one entry for
     // each part of each object.
+
+    for (Object* obj : objects) {
+        if (obj->number_parts > 0) {
+            for (int i = 0; i < obj->number_parts; i++)
+                hierarchy.entries.push_back( {obj, i, obj->Bounding_Box(i)} );
+        } else {
+            hierarchy.entries.push_back({obj, 0, obj->Bounding_Box(0)});
+        }
+    }
 
     hierarchy.Reorder_Entries();
     hierarchy.Build_Tree();

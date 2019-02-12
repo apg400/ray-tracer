@@ -15,8 +15,6 @@ Hit Sphere::Intersection(const Ray& ray, int part) const
         double x = (b > 0) ? -0.5*(b + sqrt(discriminant)) : -0.5*(b - sqrt(discriminant));
         double t1 = x / a;
         double t2 = c / x;
-        //double t1 = (-b + sqrt(discriminant)) / (2 * a);
-        //double t2 = (-b - sqrt(discriminant)) / (2 * a);
         if (t1 > t2) std::swap(t1, t2);
         if (t1 > small_t) return {this, t1, 0};
         if (t2 > small_t) return {this, t2, 0};
@@ -33,6 +31,7 @@ vec3 Sphere::Normal(const vec3& point, int part) const
 Box Sphere::Bounding_Box(int part) const
 {
     Box box;
-    TODO; // calculate bounding box
+    box.lo = vec3(center[0] - radius, center[1] - radius, center[2] - radius);
+    box.hi = vec3(center[0] + radius, center[1] + radius, center[2] + radius);
     return box;
 }

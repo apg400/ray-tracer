@@ -29,6 +29,6 @@ Box Plane::Bounding_Box(int part) const
 {
     Box b;
     b.hi.fill(std::numeric_limits<double>::max());
-    b.lo=-b.hi;
+    b.lo = -b.hi;
     return b;
 }
