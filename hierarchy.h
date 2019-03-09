@@ -29,6 +29,10 @@ struct Entry
     Object* obj;
     int part;
     Box box;
+    bool operator< (const Entry& B) const {
+        return (((box.lo[0] + box.hi[0])/2) < ((B.box.lo[0] + B.box.hi[0])/2)
+               && ((box.lo[1] + box.hi[1])/2) < ((B.box.lo[1] + B.box.hi[1])/2));
+    }
 };
 
 class Hierarchy

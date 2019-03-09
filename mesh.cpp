@@ -46,7 +46,7 @@ Hit Mesh::Intersection(const Ray& ray, int part) const
         double t = 0.0;
         if (this->Intersect_Triangle(ray, part, t)) 
             return {this, t, part};
-    } else {
+    } /*else {
         double min_t = std::numeric_limits<double>::max();
         int part = 0;
         Hit intersection = {nullptr, 0, 0};
@@ -61,7 +61,7 @@ Hit Mesh::Intersection(const Ray& ray, int part) const
         intersection.dist = min_t;
         intersection.part = part;
         return intersection;
-    }
+    }*/
     return {nullptr, 0.0, part};
 }
 
@@ -75,7 +75,7 @@ vec3 Mesh::Normal(const vec3& point, const int part) const
     vec3 C = vertices[index[2]];
     // Indices are ordered counterclockwise to represent the front facing direction
     // The correct normal is the cross product of vector AB with AC 
-    return (cross(B-A, C-A)).normalized();
+    return cross(B-A, C-A).normalized();
 }
 
 // This is a helper routine whose purpose is to simplify the implementation
@@ -103,7 +103,7 @@ bool Mesh::Intersect_Triangle(const Ray& ray, int tri, double& dist) const
     double gamma = dot(cross(ray.direction, v), y) / det;
     
     return dist > small_t && beta > weight_tol && gamma > weight_tol 
-           && 1-beta-gamma > weight_tol; 
+           && (1-beta-gamma > weight_tol); 
 }
 
 // Compute the bounding box.  Return the bounding box of only the triangle whose

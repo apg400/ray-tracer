@@ -4,6 +4,7 @@
 #include "light.h"
 #include "ray.h"
 #include <limits>
+#include <ctime>
 
 #include <iostream>
 
@@ -26,11 +27,17 @@ Render_World::~Render_World()
 Hit Render_World::Closest_Intersection(const Ray& ray)
 {
     Hit closest_hit = {nullptr, std::numeric_limits<double>::max(), 0};
-    for (Object* obj : objects) {
-        Hit current = obj->Intersection(ray, -1);
-        if (current.object && current.dist > small_t && current.dist < closest_hit.dist) 
+    
+    std::vector<int> candidates;
+    hierarchy.Intersection_Candidates(ray, candidates);
+
+    for (int p : candidates) {
+        Entry* ent = &hierarchy.entries[p];
+        Hit current = (ent->obj)->Intersection(ray, ent->part);
+        if (current.object && current.dist > small_t && current.dist < closest_hit.dist)
             closest_hit = current;
     }
+
     return closest_hit;
 }
 
@@ -76,8 +83,8 @@ vec3 Render_World::Cast_Ray(const Ray& ray, int recursion_depth)
 
 void Render_World::Initialize_Hierarchy()
 {
-    // Fill in hierarchy.entries; there should be one entry for
-    // each part of each object.
+    // Fills in hierarchy.entries 
+    // there is one entry for each part of each object.
 
     for (Object* obj : objects) {
         if (obj->number_parts > 0) {
